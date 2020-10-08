@@ -19,6 +19,8 @@ from relstorage.options import Options
 from relstorage.storage import RelStorage
 from relstorage.adapters.replica import ReplicaSelector
 
+import os
+
 
 class RelStorageFactory(BaseConfig):
     """Open a storage configured via ZConfig"""
@@ -30,7 +32,25 @@ class RelStorageFactory(BaseConfig):
             if value is not None:
                 setattr(options, key, value)
         adapter = config.adapter.create(options)
-        return RelStorage(adapter, name=config.name, options=options)
+        if config.blobhelper:
+            blobhelper = config.blobhelper.create(options, adapter)
+        else:
+            blobhelper = None
+        return RelStorage(adapter,
+                          name=config.name,
+                          options=options,
+                          blobhelper=blobhelper)
+
+
+class S3BlobHelperAdapterFactory(BaseConfig):
+    def create(self, options, adapter):
+        from s3blobhelper import S3BlobHelper
+        options.bucket_name = self.config.bucket_name
+        options.endpoint_url = self.config.endpoint_url
+        options.region_name = self.config.region_name
+        options.aws_access_key_id = os.environ.get('aws_access_key_id')
+        options.aws_secret_access_key = os.environ.get('aws_secret_access_key')
+        return S3BlobHelper(options, adapter)
 
 
 class PostgreSQLAdapterFactory(BaseConfig):

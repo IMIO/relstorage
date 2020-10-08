@@ -6,10 +6,12 @@
 
   <import package="ZODB"/>
   <abstracttype name="relstorage.adapter"/>
+  <abstracttype name="relstorage.blobhelper"/>
 
   <sectiontype name="relstorage" implements="ZODB.storage"
       datatype=".RelStorageFactory">
     <section type="relstorage.adapter" name="*" attribute="adapter"/>
+    <section type="relstorage.blobhelper" name="*" attribute="blobhelper"/>
     <key name="name" datatype="string" required="no"/>
     <key name="read-only" datatype="boolean" default="false">
       <description>See the RelStorage README.txt file.</description>
@@ -91,6 +93,25 @@
     </key>
     <key name="create-schema" datatype="boolean" default="true">
       <description>See the RelStorage README.txt file.</description>
+    </key>
+  </sectiontype>
+
+  <sectiontype name="s3" implements="relstorage.blobhelper"
+    datatype=".S3BlobHelperAdapterFactory">
+    <key name="bucket-name" required="yes">
+      <description>
+        Name of the S3 bucket to fetch blobs from.
+      </description>
+    </key>
+    <key name="endpoint-url" required="no" datatype="string">
+      <description>
+        Custom endpoint for the S3 API (using AWS by default).
+      </description>
+    </key>
+    <key name="region-name" required="no" datatype="string">
+      <description>
+        Region of the S3 Bucket
+      </description>
     </key>
   </sectiontype>
 

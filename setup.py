@@ -90,12 +90,14 @@ setup(
         'mysql': ['MySQL-python>=1.2.2'],
         'postgresql': ['psycopg2>=2.0'],
         'oracle': ['cx_Oracle>=4.3.1'],
+        's3': ['boto3', 'python-magic'],
         'test': tests_require,
     },
     entry_points = {
         'console_scripts': [
             'zodbconvert = relstorage.zodbconvert:main',
             'zodbpack = relstorage.zodbpack:main',
+            's3moveblob = relstorage.s3moveblob:main',
         ],
         'zodburi.resolvers': [
             ('postgres = '
